@@ -9,7 +9,7 @@ This repository holds small standalone helpers for agterm and companion tools.
 - Keep tests in each script behind `--test`.
 - Tests must use fake external commands and temporary directories.
 - Tests must not launch real agents or change live terminal sessions.
-- Run `./codex-peer --test` after changing the wrapper.
+- Run each changed script with `--test`.
 - Keep executable permissions and update the README when usage changes.
 
 ## Writing
