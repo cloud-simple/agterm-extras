@@ -33,8 +33,12 @@ codex-peer resume --last
 `resume --last` continues the most recent Codex session for the current directory
 without opening the session picker. Run `codex-peer resume` to choose a session.
 
-Profiles live in `$CODEX_HOME`, or `~/.codex` when it is unset. Their names combine
-the agterm session name and pane ID. Each launch replaces its generated profile.
+Profiles must live directly in `$CODEX_HOME`, or `~/.codex` when it is unset.
+Codex's `--profile` option rejects directory separators, so it cannot select files
+in a `tmp/` or `.tmp/` subdirectory.
+
+Profile names combine the agterm session name and pane ID.
+Each launch replaces its generated profile.
 Renaming a session creates a new filename; old profiles remain.
 
 The wrapper owns profile selection inside agterm, so an additional `--profile`

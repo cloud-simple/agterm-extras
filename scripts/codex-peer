@@ -34,7 +34,7 @@ def session_name(node, session_id):
     return None
 
 
-def main():
+def launch_codex():
     args = sys.argv[1:]
     session_id = os.environ.get("AGTERM_SESSION_ID")
     if not session_id:
@@ -55,21 +55,38 @@ def main():
         role = re.sub(r"[^a-z0-9_-]", "-", role.lower()) or "main"
         pane_key = f"{session_key}-{role}"
 
+    # tree lists workspaces and sessions.
+    # --json returns data we can parse.
     command = ["agtermctl", "tree", "--json"]
+    # --window selects the caller's window.
+    # --socket selects the agterm instance that owns the session.
     for variable, option in (("AGTERM_WINDOW_ID", "--window"), ("AGTERM_SOCKET", "--socket")):
         value = os.environ.get(variable)
         if value:
             command.extend([option, value])
     try:
-        result = subprocess.run(command, check=True, capture_output=True, text=True, timeout=5)
+        result = subprocess.run(
+            command,
+            check=True,  # Raise an error if agtermctl exits with a nonzero status.
+            capture_output=True,  # Capture stdout and stderr.
+            text=True,  # Decode the captured output as text.
+            timeout=5,  # Stop agtermctl if it takes more than five seconds.
+        )
         name = session_name(json.loads(result.stdout), session_id)
         if not name:
             raise ValueError("session not found")
     except (OSError, subprocess.SubprocessError, ValueError):
+        # Use a readable prefix when the session name is unavailable.
+        # The pane key still identifies the profile.
         name = "session"
         print("codex-peer: session name unavailable; using the pane ID", file=sys.stderr)
 
+    # Normalize Unicode forms, such as accented letters, before keeping ASCII text.
+    # For example, "Café" becomes "Cafe".
+    # Drop any remaining non-ASCII characters.
     name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    # Keep at most 40 allowed profile-name characters.
+    # Use "session" if none remain.
     slug = re.sub(r"[^a-z0-9_-]+", "-", name.lower()).strip("-_")[:40] or "session"
     profile = f"agterm-{slug}-{pane_key}"
     config_dir = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex").expanduser()
@@ -93,6 +110,17 @@ def main():
             temporary.unlink(missing_ok=True)
 
     os.execvp("codex", ["codex", "--profile", profile, *args])
+
+
+def main():
+    if sys.argv[1:] == ["--test"]:
+        return run_tests()
+    try:
+        launch_codex()
+    except (OSError, ValueError) as error:
+        print(f"codex-peer: {error}", file=sys.stderr)
+        return 2
+    return 0
 
 
 def run_tests():
@@ -245,10 +273,4 @@ def run_tests():
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--test"]:
-        sys.exit(run_tests())
-    try:
-        main()
-    except (OSError, ValueError) as error:
-        print(f"codex-peer: {error}", file=sys.stderr)
-        sys.exit(2)
+    sys.exit(main())
