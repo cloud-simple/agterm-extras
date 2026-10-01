@@ -16,7 +16,8 @@ and companion tools.
 Run `make` or `make install` from this directory to install the scripts in
 `~/.local/bin`. This directory must be on `PATH`.
 
-Set `PREFIX` to install elsewhere:
+The scripts install to `$PREFIX/bin`. Set `PREFIX` to install elsewhere. This
+command installs them in `/usr/local/bin`:
 
 ```sh
 make install PREFIX=/usr/local
