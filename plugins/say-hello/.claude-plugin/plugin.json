@@ -1,0 +1,10 @@
+{
+  "name": "say-hello",
+  "description": "Test communication with Codex: send a hello through the peer-chat skill and report whether Codex answered",
+  "version": "0.1.0",
+  "author": {
+    "name": "mtilson"
+  },
+  "homepage": "https://github.com/cloud-simple/agterm-extras",
+  "repository": "https://github.com/cloud-simple/agterm-extras"
+}
