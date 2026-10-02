@@ -6,12 +6,12 @@ and companion tools.
 | Item | Type | Path |
 |---|---|---|
 | `codex-peer` | Script | `scripts/codex-peer` |
-| `say-hello` | Claude Code plugin | `plugins/say-hello` |
+| `agtextra` | Claude Code plugin | `plugins/agtextra` |
 
 ## Install
 
-`make install` installs the scripts only. Install plugins through Claude Code; see
-[say-hello](#say-hello).
+`make install` installs the scripts only. Install the plugin through Claude Code; see
+[agtextra](#agtextra).
 
 Run `make` or `make install` from this directory to install the scripts in
 `~/.local/bin`. This directory must be on `PATH`.
@@ -54,10 +54,31 @@ Renaming a session creates a new filename; old profiles remain.
 The wrapper owns profile selection inside agterm, so an additional `--profile`
 argument is rejected. Without `AGTERM_SESSION_ID`, it runs Codex unchanged.
 
-## say-hello
+## agtextra
 
-A Claude Code plugin that tests communication with Codex. `/say-hello` sends one
-hello to Codex in the other pane and prints one of these lines:
+A Claude Code plugin that holds the skills in this repository.
+
+| Skill | Command | Purpose |
+|---|---|---|
+| `say-hello` | `/agtextra:say-hello` | Test communication with Codex |
+
+Install the plugin from this repository's marketplace:
+
+```
+/plugin marketplace add cloud-simple/agterm-extras
+/plugin install agtextra@agterm-extras
+```
+
+To try a local checkout without installing:
+
+```sh
+claude --plugin-dir plugins/agtextra
+```
+
+### say-hello
+
+`/agtextra:say-hello` sends one hello to Codex in the other pane and prints one of
+these lines:
 
 - `OK: Codex is available`
 - `ERR: Codex is not available`
@@ -68,20 +89,7 @@ The plugin does not include these parts. Install them first:
 - The `peer-chat.py` command on `PATH`.
 - An agterm session with a split, and Codex running in the other pane.
 
-Install the plugin from this repository's marketplace:
-
-```
-/plugin marketplace add cloud-simple/agterm-extras
-/plugin install say-hello@agterm-extras
-```
-
-To try a local checkout without installing:
-
-```sh
-claude --plugin-dir plugins/say-hello
-```
-
-Type `/say-hello`. The full name is `/say-hello:say-hello`.
+Type `/agtextra:say-hello`.
 
 1. The skill sends the hello. If the send fails, it prints `ERR: Codex is not available`.
 2. It prints `Hello sent. Waiting up to 90 seconds for Codex.` and ends the turn.
