@@ -6,8 +6,8 @@
   },
   "plugins": [
     {
-      "name": "agtextra",
-      "source": "./plugins/agtextra",
+      "name": "agt-extra",
+      "source": "./plugins/agt-extra",
       "description": "Claude Code skills for agterm and companion tools. say-hello tests communication with Codex through the peer-chat skill",
       "version": "0.1.0",
       "author": {

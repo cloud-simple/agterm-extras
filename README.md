@@ -6,12 +6,12 @@ and companion tools.
 | Item | Type | Path |
 |---|---|---|
 | `codex-peer` | Script | `scripts/codex-peer` |
-| `agtextra` | Claude Code plugin | `plugins/agtextra` |
+| `agt-extra` | Claude Code plugin | `plugins/agt-extra` |
 
 ## Install
 
 `make install` installs the scripts only. Install the plugin through Claude Code; see
-[agtextra](#agtextra).
+[agt-extra](#agt-extra).
 
 Run `make` or `make install` from this directory to install the scripts in
 `~/.local/bin`. This directory must be on `PATH`.
@@ -54,30 +54,30 @@ Renaming a session creates a new filename; old profiles remain.
 The wrapper owns profile selection inside agterm, so an additional `--profile`
 argument is rejected. Without `AGTERM_SESSION_ID`, it runs Codex unchanged.
 
-## agtextra
+## agt-extra
 
 A Claude Code plugin that holds the skills in this repository.
 
 | Skill | Command | Purpose |
 |---|---|---|
-| `say-hello` | `/agtextra:say-hello` | Test communication with Codex |
+| `say-hello` | `/agt-extra:say-hello` | Test communication with Codex |
 
 Install the plugin from this repository's marketplace:
 
 ```
 /plugin marketplace add cloud-simple/agterm-extras
-/plugin install agtextra@agterm-extras
+/plugin install agt-extra@agterm-extras
 ```
 
 To try a local checkout without installing:
 
 ```sh
-claude --plugin-dir plugins/agtextra
+claude --plugin-dir plugins/agt-extra
 ```
 
 ### say-hello
 
-`/agtextra:say-hello` sends one hello to Codex in the other pane and prints one of
+`/agt-extra:say-hello` sends one hello to Codex in the other pane and prints one of
 these lines:
 
 - `OK: Codex is available`
@@ -94,7 +94,7 @@ The plugin does not include these parts. Install them first:
 Note: Codex must run with `shell_environment_policy.set.AGTERM_SESSION_ID` set.
 Start it with [codex-peer](#codex-peer), which sets this.
 
-Type `/agtextra:say-hello`.
+Type `/agt-extra:say-hello`.
 
 1. The skill sends the hello. If the send fails, it prints `ERR: Codex is not available`.
 2. It prints `Hello sent. Waiting up to 90 seconds for Codex.` and ends the turn.
