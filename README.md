@@ -85,7 +85,9 @@ these lines:
 
 The plugin does not include these parts. Install them first:
 
-- The `peer-chat` skill, installed in `~/.claude/skills/peer-chat`.
+- The `peer-chat` skill for Claude Code, installed in `~/.claude/skills/peer-chat`.
+- The `peer-chat` skill for Codex, installed in `~/.codex/skills/peer-chat`. Codex
+  needs it to send its answer back.
 - The `peer-chat.py` command on `PATH`.
 - An agterm session with a split, and Codex running in the other pane.
 
