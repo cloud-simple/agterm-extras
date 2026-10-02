@@ -91,6 +91,9 @@ The plugin does not include these parts. Install them first:
 - The `peer-chat.py` command on `PATH`.
 - An agterm session with a split, and Codex running in the other pane.
 
+Note: Codex must run with `shell_environment_policy.set.AGTERM_SESSION_ID` set.
+Start it with [codex-peer](#codex-peer), which sets this.
+
 Type `/agtextra:say-hello`.
 
 1. The skill sends the hello. If the send fails, it prints `ERR: Codex is not available`.
