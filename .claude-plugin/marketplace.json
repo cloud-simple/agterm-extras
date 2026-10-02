@@ -6,9 +6,9 @@
   },
   "plugins": [
     {
-      "name": "say-hello",
-      "source": "./plugins/say-hello",
-      "description": "Test communication with Codex: send a hello through the peer-chat skill and report whether Codex answered",
+      "name": "agtextra",
+      "source": "./plugins/agtextra",
+      "description": "Claude Code skills for agterm and companion tools. say-hello tests communication with Codex through the peer-chat skill",
       "version": "0.1.0",
       "author": {
         "name": "mtilson"
