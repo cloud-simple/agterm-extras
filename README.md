@@ -7,11 +7,13 @@ and companion tools.
 |---|---|---|
 | `codex-peer` | Script | `scripts/codex-peer` |
 | `agt-extra` | Claude Code plugin | `plugins/agt-extra` |
+| `check_package.py` | Release check, not installed | `scripts/check_package.py` |
 
 ## Install
 
 `make install` installs the scripts only. Install the plugin through Claude Code; see
-[agt-extra](#agt-extra).
+[agt-extra](#agt-extra). `make install` leaves out `scripts/check_package.py`, which runs only from
+this checkout.
 
 Run `make` or `make install` from this directory to install the scripts in
 `~/.local/bin`. This directory must be on `PATH`.
@@ -101,12 +103,35 @@ Type `/agt-extra:say-hello`.
 Codex's answer shows in the pane as a `Chat from Codex:` prompt. This is how
 `peer-chat` delivers a reply, so it cannot be hidden.
 
+## Releases
+
+To release a new version, raise `version` to the same value in both
+`plugins/agt-extra/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` in a pull
+request, and release from `main` after it is merged. The release version must be the same as
+`version` in `plugin.json`, including for a release that changes only a script. The install
+commands above read the plugin from the default branch, so a version that is not merged is not
+released.
+
+Immediately before creating the release tag, run this command with the selected tag, and stop if
+it fails:
+
+```sh
+python3 scripts/check_package.py --release <tag>
+```
+
+It checks that the tag is `v` plus that version, that the checkout is clean, and that `HEAD` is the
+commit of `main` on `origin`.
+
 ## Tests
 
 ```sh
 ./scripts/codex-peer --test
+python3 scripts/check_package.py --test
 ```
 
-The built-in tests use fake commands and temporary directories. They cover argument
+The `codex-peer` tests use fake commands and temporary directories. They cover argument
 forwarding, config preservation and a bad session ID. Shared-server behavior is not
 covered.
+
+The `check_package.py` tests run real `git` on temporary repositories with no network. They
+cover the release checks.
