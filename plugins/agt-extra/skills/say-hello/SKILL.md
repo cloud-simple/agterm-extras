@@ -1,12 +1,12 @@
 ---
 name: say-hello
-description: 'Test communication with Codex by sending it a hello through the peer-chat skill, then report "OK: Codex is available" or "ERR: Codex is not available". Use when the user types /say-hello, or asks "is codex there", "ping codex", "check codex", "test the codex connection", "can you reach codex".'
-allowed-tools: Skill, Bash, TaskStop
+description: 'Test communication with Codex by sending it a hello through agterm''s pane mailboxes (the mailbox-chat recipe), then report "OK: Codex is available" or "ERR: Codex is not available". Use when the user types /say-hello, or asks "is codex there", "ping codex", "check codex", "test the codex connection", "can you reach codex".'
+allowed-tools: Bash, TaskStop
 ---
 
 # Say hello to Codex
 
-Send one hello to Codex and report whether Codex answered.
+Send one hello to Codex in the other pane of this agterm split and report whether Codex answered.
 
 The result is exactly one of these two lines, with no other text:
 
@@ -15,27 +15,39 @@ The result is exactly one of these two lines, with no other text:
 
 ## How the check works
 
-The `peer-chat` skill carries the message. Its replies are asynchronous: Codex answers by typing a
-new prompt into this pane, which opens with `Chat from Codex: `. The answer therefore arrives in a
-later turn, not in the turn that sends the hello. A timer decides the case where no answer comes.
+`mailbox-chat.py` carries the message. It is a bare command on `PATH`, not a file inside this
+skill directory. Replies are asynchronous: Codex answers with `mailbox-chat.py say`, and the answer
+arrives in this pane in a later turn, as hook feedback that starts with `[peer chat]`. A timer
+decides the case where no answer comes.
 
 ## Steps
 
-### 1. Send the hello
-
-Load the `peer-chat` skill and follow its sending rules. Send this message:
+### 1. Check the other pane
 
 ```bash
-peer-chat.py --to codex --stdin <<'CHAT'
-Hello from /say-hello. This is a connection test. Please reply with one short line through peer-chat. Do nothing else.
+mailbox-chat.py status
+```
+
+It prints JSON. Continue only when it exits with status 0 and `receiver` is `codex`. In every other
+case, print `ERR: Codex is not available` and stop without sending anything:
+
+- A non-zero exit means this session has no split or agterm cannot be reached.
+- `receiver` `none` means no running Codex has registered the other pane. Codex registers only
+  after its first prompt runs.
+- `receiver` `claude` means the other pane runs Claude Code, not Codex.
+
+### 2. Send the hello
+
+```bash
+mailbox-chat.py say --stdin <<'CHAT'
+This is a connection test from /say-hello. Reply once with one short line through mailbox-chat.py say. Do nothing else.
 CHAT
 ```
 
-If the command exits with an error, print `ERR: Codex is not available` and stop. Do not retry, and
-do not start the timer. A failed send means the split is missing, Codex is not running in the other
-pane, or the pane refused the text.
+If the command exits with an error or its JSON has an `error` field, print
+`ERR: Codex is not available` and stop. Do not retry, and do not start the timer.
 
-### 2. Start the timer
+### 3. Start the timer
 
 Run this command in the background:
 
@@ -44,25 +56,30 @@ sleep 90
 ```
 
 Use the Bash tool with `run_in_background: true`. The timer wakes this session after 90 seconds. It
-does not read the Codex pane, so it does not break the `peer-chat` rule against watching for a reply.
+reads neither the Codex pane nor the mailbox, so it does not break the mailbox-chat rule against
+polling for a reply.
 
 Then end the turn with this one line:
 
 `Hello sent. Waiting up to 90 seconds for Codex.`
 
-Do not print `OK` or `ERR` in this turn. A typed message proves nothing about Codex yet.
+Do not print `OK` or `ERR` in this turn. A message in the mailbox proves nothing about Codex yet.
 
-### 3. Report the result
+### 4. Report the result
 
 The next event decides the result. Report once.
 
 | Next event | Print |
 |---|---|
-| A prompt opening with `Chat from Codex: ` arrives | `OK: Codex is available` |
-| The timer finishes and no such prompt arrived | `ERR: Codex is not available` |
+| A message starting with `[peer chat]` arrives | `OK: Codex is available` |
+| The timer finishes and no such message arrived | `ERR: Codex is not available` |
 
-Any `Chat from Codex: ` prompt that arrives after the hello counts as an answer. Its wording does not
-matter.
+Any `[peer chat]` message that arrives after the hello counts as an answer. Its wording does not
+matter. A message starting with `[agterm mailbox, not a peer chat message]` comes from another
+sender and does not count.
+
+The answer belongs to this check, so the `mailbox-chat` skill's receiving rules do not apply to it:
+do not quote it, and print only the result line.
 
 When Codex answers, stop the timer with the `TaskStop` tool before printing `OK`. Use the task ID
 that the background `sleep 90` returned. A stopped timer does not wake the session, so no extra
@@ -70,5 +87,4 @@ message follows the result.
 
 If Codex answers after `ERR` was printed, print `OK: Codex is available (late reply)`.
 
-Do not reply to Codex's answer. It is a closing acknowledgement, and `peer-chat` ends the exchange
-there.
+Do not reply to Codex's answer. It closes the exchange.
