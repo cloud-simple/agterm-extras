@@ -82,26 +82,33 @@ these lines:
 - `OK: Codex is available`
 - `ERR: Codex is not available`
 
-The plugin does not include these parts. Install them first:
+The plugin does not include the message transport. It uses agterm's pane mailboxes
+through the
+[two-agent-mailbox-chat](https://github.com/umputun/agterm/tree/master/cookbook/two-agent-mailbox-chat)
+recipe from the agterm cookbook, which needs agterm 0.40.0 or later. Install the recipe
+first, following every step of its Setup section:
 
-- The `peer-chat` skill for Claude Code, installed in `~/.claude/skills/peer-chat`.
-- The `peer-chat` skill for Codex, installed in `~/.codex/skills/peer-chat`. Codex
-  needs it to send its answer back.
-- The `peer-chat.py` command on `PATH`.
-- An agterm session with a split, and Codex running in the other pane.
-
-Note: Codex must run with `shell_environment_policy.set.AGTERM_SESSION_ID` set.
-Start it with [codex-peer](#codex-peer), which sets this.
+- The `mailbox-chat.py` command on `PATH`.
+- The `mailbox-chat` skill for Codex, installed in `~/.codex/skills/mailbox-chat`.
+  Codex needs it to send its answer back.
+- The Claude Code hooks in `~/.claude/settings.json`. A Claude Code started before
+  they were added receives no answer.
+- The Codex `SessionStart` hook and sandbox rules, and agterm's `on message` hook.
+- An agterm session with a split, and Codex running in the other pane. Start Codex
+  with `--no-daemon` and a first prompt, as the recipe's Setup shows. Codex takes no
+  messages until its first prompt runs.
 
 Type `/agt-extra:say-hello`.
 
-1. The skill sends the hello. If the send fails, it prints `ERR: Codex is not available`.
-2. It prints `Hello sent. Waiting up to 90 seconds for Codex.` and ends the turn.
-3. If Codex answers within 90 seconds, it prints `OK: Codex is available`.
-4. If Codex does not answer, it prints `ERR: Codex is not available`.
+1. The skill runs `mailbox-chat.py status`. If no running Codex serves the other
+   pane, it prints `ERR: Codex is not available` and sends nothing.
+2. It sends the hello. If the send fails, it prints `ERR: Codex is not available`.
+3. It prints `Hello sent. Waiting up to 90 seconds for Codex.` and ends the turn.
+4. If Codex answers within 90 seconds, it prints `OK: Codex is available`.
+5. If Codex does not answer, it prints `ERR: Codex is not available`.
 
-Codex's answer shows in the pane as a `Chat from Codex:` prompt. This is how
-`peer-chat` delivers a reply, so it cannot be hidden.
+Codex's answer shows in the pane as a collapsed `chat received` line. This is how
+mailbox-chat delivers a reply, so it cannot be hidden.
 
 ## Releases
 
