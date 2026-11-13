@@ -91,8 +91,8 @@ first, following every step of its Setup section:
 - The `mailbox-chat.py` command on `PATH`.
 - The `mailbox-chat` skill for Codex, installed in `~/.codex/skills/mailbox-chat`.
   Codex needs it to send its answer back.
-- The Claude Code hooks in `~/.claude/settings.json`. A Claude Code started before
-  they were added receives no answer.
+- The Claude Code hooks in `~/.claude/settings.json`. A running Claude Code normally
+  loads new hooks by itself. If `/hooks` does not list them, restart Claude Code.
 - The Codex `SessionStart` hook and sandbox rules, and agterm's `on message` hook.
 - An agterm session with a split, and Codex running in the other pane. Start Codex
   with `--no-daemon` and a first prompt, as the recipe's Setup shows. Codex takes no
