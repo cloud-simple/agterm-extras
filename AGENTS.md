@@ -13,7 +13,9 @@ This repository holds small standalone helpers for agterm and companion tools.
 - Run each changed script with `--test`.
 - Keep executable permissions and update the README when usage changes.
 
-## Releases
+## Branches and releases
+
+`main` is protected: every change reaches it through a pull request with a squash merge.
 
 To release a new version of the plugin, raise `version` to the same value in both manifests
 (`plugins/agt-extra/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`) in a pull
@@ -23,6 +25,9 @@ version only through that field on `main`.
 Immediately before creating the release tag, run `python3 scripts/check_package.py --release <tag>`
 with the selected tag, and stop if it fails. It checks that the tag is `v` plus that version, that
 the checkout is clean, and that `HEAD` is the commit of `main` on `origin`.
+
+Release docs state only what this repo requires. They must not name a hosting platform, such as
+GitHub, or a release tool from outside this repo.
 
 ## Writing
 

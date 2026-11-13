@@ -112,6 +112,9 @@ mailbox-chat delivers a reply, so it cannot be hidden.
 
 ## Releases
 
+`main` is protected: every change reaches it through a pull request with a squash merge. Direct
+pushes, force pushes and deleting `main` are refused.
+
 To release a new version, raise `version` to the same value in both
 `plugins/agt-extra/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` in a pull
 request, and release from `main` after it is merged. The release version must be the same as
