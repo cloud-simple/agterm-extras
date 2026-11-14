@@ -1,57 +1,11 @@
 # agterm-extras
 
-Small scripts and Claude Code plugins for [agterm](https://github.com/umputun/agterm)
-and companion tools.
+A Claude Code plugin for [agterm](https://github.com/umputun/agterm) and companion tools.
 
 | Item | Type | Path |
 |---|---|---|
-| `codex-peer` | Script | `scripts/codex-peer` |
 | `agt-extra` | Claude Code plugin | `plugins/agt-extra` |
-| `check_package.py` | Release check, not installed | `scripts/check_package.py` |
-
-## Install
-
-`make install` installs the scripts only. Install the plugin through Claude Code; see
-[agt-extra](#agt-extra). `make install` leaves out `scripts/check_package.py`, which runs only from
-this checkout.
-
-Run `make` or `make install` from this directory to install the scripts in
-`~/.local/bin`. This directory must be on `PATH`.
-
-The scripts install to `$PREFIX/bin`. Set `PREFIX` to install elsewhere. This
-command installs them in `/usr/local/bin`:
-
-```sh
-make install PREFIX=/usr/local
-```
-
-## codex-peer
-
-Launch Codex with the current agterm session ID. The wrapper adds
-`-c shell_environment_policy.set.AGTERM_SESSION_ID="<session-id>"` so commands run by
-Codex can identify their agterm session. It writes no config files, so Codex keeps
-the trust saved in its base config across restarts and new panes.
-
-Requires Python 3 and `codex` on `PATH`. `codex-peer --test` requires Python 3.11 or
-newer.
-
-Use it like Codex:
-
-```sh
-codex-peer
-codex-peer resume --last
-```
-
-`resume --last` continues the most recent Codex session for the current directory
-without opening the session picker. Run `codex-peer resume` to choose a session.
-
-The wrapper forwards all other arguments unchanged, including `--profile`. Without
-`AGTERM_SESSION_ID`, it runs Codex unchanged. If `AGTERM_SESSION_ID` is not a UUID, it
-exits with status 2 and does not start Codex.
-
-Earlier versions generated `agterm-*.config.toml` profiles in `$CODEX_HOME`, or
-`~/.codex` when it is unset. The wrapper no longer selects, changes or deletes these
-files.
+| `check_package.py` | Release check, runs from this checkout | `scripts/check_package.py` |
 
 ## agt-extra
 
@@ -135,13 +89,8 @@ commit of `main` on `origin`.
 ## Tests
 
 ```sh
-./scripts/codex-peer --test
 python3 scripts/check_package.py --test
 ```
-
-The `codex-peer` tests use fake commands and temporary directories. They cover argument
-forwarding, config preservation and a bad session ID. Shared-server behavior is not
-covered.
 
 The `check_package.py` tests run real `git` on temporary repositories with no network. They
 cover the release checks.
