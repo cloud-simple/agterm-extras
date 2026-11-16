@@ -4,6 +4,23 @@ Each section is one release. Its version is the `version` in
 `plugins/agt-extra/.claude-plugin/plugin.json`, and its tag is `v` plus that version. Numbers in
 parentheses are pull requests.
 
+## [0.3.0] - 2026-11-16
+
+### Added
+
+- `CHANGELOG.md`, with a section for each release. The version bump pull request adds the new
+  version's section, and that section is the release notes. (#14)
+
+### Changed
+
+- `say-hello` tests whichever agent serves the other pane's mailbox, Codex or Claude Code, not
+  only Codex. It prints `OK: <agent> is available`, `ERR: <agent> is not available` or
+  `ERR: no agent is available in the other pane`. (#16)
+
+### Removed
+
+- The Writing section of `AGENTS.md`. (#15)
+
 ## [0.2.0] - 2026-11-14
 
 ### Removed
