@@ -31,13 +31,3 @@ the checkout is clean, and that `HEAD` is the commit of `main` on `origin`.
 
 Release docs state only what this repo requires. They must not name a hosting platform, such as
 GitHub, or a release tool from outside this repo.
-
-## Writing
-
-- Use Plain Language for prose and agent-facing files.
-- Lead with the main point. Use common words, plain verbs and active voice.
-- Keep sentences short. State one claim per sentence.
-- Use one term for the same item. Use `must` for requirements.
-- State instructions directly. Remove repeated or unnecessary words.
-- Name the approach to use and when an alternative applies.
-- Keep exact identifiers, commands, paths, quotations and the full technical meaning.
