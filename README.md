@@ -74,7 +74,9 @@ To release a new version, raise `version` to the same value in both
 request, and release from `main` after it is merged. The release version must be the same as
 `version` in `plugin.json`, including for a release that changes only a script. The install
 commands above read the plugin from the default branch, so a version that is not merged is not
-released.
+released. The same pull request adds the new version's section at the top of
+[CHANGELOG.md](CHANGELOG.md), and that section is the release notes. The release tag goes on the
+merged commit, with no commit after it.
 
 Immediately before creating the release tag, run this command with the selected tag, and stop if
 it fails:
