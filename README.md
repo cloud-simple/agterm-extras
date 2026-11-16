@@ -13,7 +13,7 @@ A Claude Code plugin that holds the skills in this repository.
 
 | Skill | Command | Purpose |
 |---|---|---|
-| `say-hello` | `/agt-extra:say-hello` | Test communication with Codex |
+| `say-hello` | `/agt-extra:say-hello` | Test communication with the agent in the other pane |
 
 Install the plugin from this repository's marketplace:
 
@@ -30,38 +30,47 @@ claude --plugin-dir plugins/agt-extra
 
 ### say-hello
 
-`/agt-extra:say-hello` sends one hello to Codex in the other pane and prints one of
-these lines:
+`/agt-extra:say-hello` sends one hello to the agent in the other pane of the split and
+prints one of these lines:
 
-- `OK: Codex is available`
-- `ERR: Codex is not available`
+- `OK: <agent> is available`
+- `ERR: <agent> is not available`
+- `ERR: no agent is available in the other pane`
+
+`<agent>` is `Codex` or `Claude Code`, whichever serves the other pane's mailbox.
 
 The plugin does not include the message transport. It uses agterm's pane mailboxes
 through the
 [two-agent-mailbox-chat](https://github.com/umputun/agterm/tree/master/cookbook/two-agent-mailbox-chat)
-recipe from the agterm cookbook, which needs agterm 0.40.0 or later. Install the recipe
-first, following every step of its Setup section:
+recipe from the agterm cookbook, which needs agterm 0.40.0 or later. The recipe serves
+Codex and Claude Code. Install it first, following every step of its Setup section for
+the agents you run:
 
 - The `mailbox-chat.py` command on `PATH`.
-- The `mailbox-chat` skill for Codex, installed in `~/.codex/skills/mailbox-chat`.
-  Codex needs it to send its answer back.
-- The Claude Code hooks in `~/.claude/settings.json`. A running Claude Code normally
-  loads new hooks by itself. If `/hooks` does not list them, restart Claude Code.
-- The Codex `SessionStart` hook and sandbox rules, and agterm's `on message` hook.
-- An agterm session with a split, and Codex running in the other pane. Start Codex
+- The Claude Code hooks in `~/.claude/settings.json`. This Claude Code needs them to
+  receive the answer, and a Claude Code in the other pane needs them to receive the
+  hello. A running Claude Code normally loads new hooks by itself. If `/hooks` does
+  not list them, restart Claude Code.
+- The `mailbox-chat` skill for each agent in the other pane: `~/.claude/skills/mailbox-chat`
+  for Claude Code, `~/.codex/skills/mailbox-chat` for Codex. The agent needs it to send
+  its answer back.
+- For Codex: its `SessionStart` hook and sandbox rules, and agterm's `on message` hook.
+- An agterm session with a split, and the agent running in the other pane. Start Codex
   with `--no-daemon` and a first prompt, as the recipe's Setup shows. Codex takes no
   messages until its first prompt runs.
 
 Type `/agt-extra:say-hello`.
 
-1. The skill runs `mailbox-chat.py status`. If no running Codex serves the other
-   pane, it prints `ERR: Codex is not available` and sends nothing.
-2. It sends the hello. If the send fails, it prints `ERR: Codex is not available`.
-3. It prints `Hello sent. Waiting up to 90 seconds for Codex.` and ends the turn.
-4. If Codex answers within 90 seconds, it prints `OK: Codex is available`.
-5. If Codex does not answer, it prints `ERR: Codex is not available`.
+1. The skill runs `mailbox-chat.py status`. If no running agent serves the other pane,
+   it prints `ERR: no agent is available in the other pane` and sends nothing.
+2. It sends the hello. If the send fails, it prints `ERR: <agent> is not available`.
+3. It prints `Hello sent. Waiting up to 90 seconds for <agent>.` and ends the turn. A
+   Claude Code that is mid-turn reads the hello only when that turn ends.
+4. If the agent answers within 90 seconds, it prints `OK: <agent> is available`.
+5. If the agent does not answer, it prints `ERR: <agent> is not available`. A later
+   answer prints `OK: <agent> is available (late reply)`.
 
-Codex's answer shows in the pane as a collapsed `chat received` line. This is how
+The answer shows in the pane as a collapsed `chat received` line. This is how
 mailbox-chat delivers a reply, so it cannot be hidden.
 
 ## Releases
