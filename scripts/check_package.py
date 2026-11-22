@@ -21,6 +21,7 @@ import tempfile
 
 PLUGIN = "agt-extra"
 PLUGIN_MANIFEST = f"plugins/{PLUGIN}/.claude-plugin/plugin.json"
+CODEX_MANIFEST = f"plugins/{PLUGIN}/.codex-plugin/plugin.json"
 MARKETPLACE_MANIFEST = ".claude-plugin/marketplace.json"
 RELEASE_REMOTE = "origin"
 RELEASE_BRANCH = "main"
@@ -62,7 +63,7 @@ def read_head_json(root, path):
 
 
 def manifest_version(root):
-    """Return the version that both manifests in HEAD set for the plugin."""
+    """Return the version shared by all three manifests in HEAD."""
     plugin_version = read_head_json(root, PLUGIN_MANIFEST).get("version")
     entries = [entry for entry in read_head_json(root, MARKETPLACE_MANIFEST).get("plugins", [])
                if entry.get("name") == PLUGIN]
@@ -72,17 +73,20 @@ def manifest_version(root):
     require(plugin_version == marketplace_version,
             f"Both manifests in HEAD must have the same version: {PLUGIN_MANIFEST} has "
             f"{plugin_version}, {MARKETPLACE_MANIFEST} has {marketplace_version}")
+    codex_version = read_head_json(root, CODEX_MANIFEST).get("version")
+    require(codex_version == plugin_version,
+            f"{CODEX_MANIFEST} must set version to {plugin_version}. It has {codex_version}")
     return plugin_version
 
 
 def check_release(root, tag):
-    """Check that tag matches both manifests in HEAD, the checkout is clean,
+    """Check that tag matches the manifests in HEAD, the checkout is clean,
     and HEAD is the commit of main on origin, read live from the server."""
     # Read the version from the commit being tagged. Files on disk can differ from HEAD
     # even when git status is empty, for example under git update-index --assume-unchanged.
     version = manifest_version(root)
     require(tag == f"v{version}",
-            f"The release tag must be v{version}, the version of both manifests in HEAD, not {tag}")
+            f"The release tag must be v{version}, the version of the manifests in HEAD, not {tag}")
     status = git(root, ["status", "--porcelain", "--untracked-files=all"])
     require(status.returncode == 0, f"git status failed: {status.stderr.strip()}")
     require(status.stdout == "", "The checkout must be clean: no staged, unstaged or untracked files")
@@ -156,12 +160,15 @@ def run_tests():
                                     cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.assertEqual(result.returncode, 0, result.stdout)
 
-        def write_manifests(self, plugin_version="1.2.3", marketplace_version="1.2.3"):
+        def write_manifests(self, plugin_version="1.2.3", marketplace_version="1.2.3", codex_version="1.2.3"):
             plugin = self.root / PLUGIN_MANIFEST
+            codex = self.root / CODEX_MANIFEST
             marketplace = self.root / MARKETPLACE_MANIFEST
             plugin.parent.mkdir(parents=True, exist_ok=True)
+            codex.parent.mkdir(parents=True, exist_ok=True)
             marketplace.parent.mkdir(parents=True, exist_ok=True)
             plugin.write_text(json.dumps({"name": PLUGIN, "version": plugin_version}))
+            codex.write_text(json.dumps({"name": PLUGIN, "version": codex_version}))
             marketplace.write_text(json.dumps({"plugins": [{"name": PLUGIN, "version": marketplace_version}]}))
 
         def make_repo(self):
@@ -205,6 +212,11 @@ def run_tests():
             self.write_manifests(plugin_version="1.3.0")
             self.commit_all()
             self.assert_rejects("v1.3.0", "must have the same version")
+
+        def test_rejects_a_different_codex_version(self):
+            self.write_manifests(codex_version="1.3.0")
+            self.commit_all()
+            self.assert_rejects("v1.2.3", f"{CODEX_MANIFEST} must set version to 1.2.3")
 
         def test_rejects_a_manifest_without_a_version(self):
             (self.root / PLUGIN_MANIFEST).write_text(json.dumps({"name": PLUGIN}))
@@ -256,9 +268,9 @@ def run_tests():
             self.assert_rejects("v1.2.3", "Cannot read main from origin")
 
         def test_reads_the_version_from_head(self):
-            for path in (PLUGIN_MANIFEST, MARKETPLACE_MANIFEST):
+            for path in (PLUGIN_MANIFEST, CODEX_MANIFEST, MARKETPLACE_MANIFEST):
                 self.git_ok(self.root, "update-index", "--assume-unchanged", path)
-            self.write_manifests("9.9.9", "9.9.9")
+            self.write_manifests("9.9.9", "9.9.9", "9.9.9")
             # git status now shows nothing, but HEAD still has the old version.
             self.assert_rejects("v9.9.9", "must be v1.2.3")
 

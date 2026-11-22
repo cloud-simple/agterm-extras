@@ -1,6 +1,6 @@
 {
   "name": "agterm-extras",
-  "description": "Claude Code plugins for agterm and companion tools",
+  "description": "Plugins for agterm and companion tools",
   "owner": {
     "name": "mtilson"
   },
@@ -8,7 +8,7 @@
     {
       "name": "agt-extra",
       "source": "./plugins/agt-extra",
-      "description": "Claude Code skills for agterm and companion tools. say-hello tests communication with the agent in the other pane through agterm's pane mailboxes",
+      "description": "Test communication with the agent in the other agterm pane.",
       "version": "0.3.0",
       "author": {
         "name": "mtilson"

@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$PLUGIN_ROOT/.codex-plugin/say-hello.py\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
