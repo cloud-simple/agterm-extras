@@ -1,0 +1,11 @@
+{
+  "name": "agt-extra",
+  "version": "0.3.0",
+  "description": "Test communication with the agent in the other agterm pane.",
+  "skills": "./skills/",
+  "hooks": "./.codex-plugin/hooks.json",
+  "interface": {
+    "displayName": "agt-extra",
+    "shortDescription": "Test the agterm pane mailbox connection"
+  }
+}

@@ -8,6 +8,19 @@ allowed-tools: Bash, TaskStop
 
 Send one hello to the agent in the other pane of this agterm split and report whether it answered.
 
+## Codex
+
+The plugin's `UserPromptSubmit` hook runs the check when the prompt is `$say-hello` or
+`say-hello` by itself. Both forms also accept `agt-extra:` before `say-hello`. On that turn
+and on reply or timeout turns, print the result the hook provides. Call no tools. If the hook
+marks an event as stale, end the turn without replying.
+
+If the user asks to test the connection in other words, tell them to enter `$say-hello` by
+itself. If the hook gave no result for that prompt, tell them to check that the plugin's hook
+is trusted in `/hooks`.
+
+## Claude Code
+
 The result is exactly one of these lines, with no other text. `<agent>` is the agent's name from
 the table in step 1.
 
