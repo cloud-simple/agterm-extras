@@ -1,6 +1,6 @@
 {
   "name": "agt-extra",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Test communication with the agent in the other agterm pane.",
   "skills": "./skills/",
   "hooks": "./.codex-plugin/hooks.json",

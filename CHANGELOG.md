@@ -4,6 +4,13 @@ Each section is one release. Its version is the `version` in
 `plugins/agt-extra/.claude-plugin/plugin.json`, and its tag is `v` plus that version. Numbers in
 parentheses are pull requests.
 
+## [0.4.0] - 2026-11-23
+
+### Added
+
+- `say-hello` in the Codex CLI. Run `$say-hello` to test the agent in the other agterm pane.
+  Codex reports whether the agent answers within 90 seconds. (#18)
+
 ## [0.3.0] - 2026-11-16
 
 ### Added
